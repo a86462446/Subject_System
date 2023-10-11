@@ -1,0 +1,24 @@
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+
+    {% block header %}
+    {% endblock %}
+
+    <!-- 學生資訊 -->
+    {% if request.user.is_authenticated %}
+        <p>學號：{{request.user}}</p>
+        <p>姓名：{{request.user.first_name}}{{request.user.last_name}}</p>
+    {% endif %}
+
+    <!-- 登出功能 -->
+    <a class="btn btn-lg btn-primary" href="{% url 'Logout' %}" role="button">登出 &#187;</a>
+
+    {% block content %}
+    {% endblock %}
+</body>
+</html>

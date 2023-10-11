@@ -15,9 +15,13 @@ class RegisterForm(UserCreationForm):
         label="姓名",
         widget=forms.TextInput(attrs={'class': 'form-control'})
     )
+    classs = forms.CharField(
+        label="班級",
+        widget=forms.TextInput(attrs={'class': 'form-control'})
+    )
     class Meta:
         model = User
-        fields = ('username', 'password', 'name')
+        fields = ('username', 'password', 'name', 'classs')
 
 
 class LoginForm(forms.Form):

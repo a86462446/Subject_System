@@ -1,14 +1,44 @@
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
-</head>
-<body>
-    <div class="jumbotron mt-3">
-        <h1>Django AuthDev HomPage</h1>
-        <p class="lead">This example is a quick demo to illustrate how django authentication works.</p>
-        <a class="btn btn-lg btn-primary" href="{% url 'Logout' %}" role="button">登出 &#187;</a>
-    </div>
-</body>
-</html>
+{% extends "base.html" %}
+
+{% block header %}
+    <h1>課程列表</h1>
+{% endblock %}
+
+{% block content %}
+
+    <!-- 課程資訊 -->
+    <table border='1'>
+        <tr>
+        <th>加選</th>
+        <th>選課代碼</th>
+        <th>科目名稱</th>
+        <th>開課班級</th>
+        <th>必選修</th>
+        <th>學分</th>
+        </tr>
+        {% for x in mycourses %}
+        <tr>
+            <td>
+                <input type="submit" value="加選" onclick="sign()" id="ss">
+            </td>
+            <td id="code">{{ x.code }}</td>
+            <td id="name">{{ x.name }}</td>
+            <td id="class">{{ x.classs }}</td>
+            <td id="required_elective">{{ x.required_elective }}</td>
+            <td id="credit">{{ x.credit }}</td>
+        </tr>
+        {% endfor %}
+    </table>
+
+    <script>
+        function sign(){
+           var yes= confirm("確定要加選嗎？")
+
+           if(yes){
+                var loc= 
+                window.location.href= "";
+           }
+        }
+   </script>
+{% endblock %}
+
