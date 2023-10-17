@@ -5,6 +5,14 @@
     <title>Document</title>
 </head>
 <body>
-    
+    {% if success_context %}
+    <p>{{ success_context }}</p>
+    {% elif same_context %}
+    <p>{{ same_context }}</p>
+    {% elif conflict_context %}
+    <p>{{ conflict_context }}</p>
+    {% endif %}
+
+    <button type="submit" onclick="window.location.href= '/'">返回上一頁</button>
 </body>
 </html>

@@ -68,6 +68,10 @@ def add_course(request, id):
     add_week= add[id- 1].week
     x= add_start
 
+    # 相同課程處理
+    if D1051831_course.objects.filter(code= add[id- 1].code):
+        return render(request, 'add_course.html', {'same_context': '已有此課程，加選失敗！'})
+
     # 衝堂處理
     if D1051831_course.objects.filter(week= add_week):
         for item in D1051831_course.objects.filter(week= add_week):
@@ -78,15 +82,11 @@ def add_course(request, id):
             for i in range(add_end- add_start+ 1):
                 for j in range(st_end- st_start+ 1):
                     if x+ i== y+ j:
-                        return redirect('/', {'conflict_context': '課堂衝突，加選失敗！'})
-
-    # 相同課程處理
-    if D1051831_course.objects.filter(code= add[id- 1].code):
-        return redirect('/', {'same_context': '已有此課程，加選失敗！'})
+                        return render(request, 'add_course.html', {'conflict_context': '課堂衝突，加選失敗！'})
     
     student= D1051831_course(code= add[id- 1].code, name= add[id- 1].name, classs= add[id- 1].classs, required_elective= add[id- 1].required_elective, credit= add[id- 1].credit, time= add[id- 1].time, start_session= add[id- 1].start_session, end_session= add[id- 1].end_session, week= add[id- 1].week)
     student.save()
-    return redirect('/', {'success_context': '加選成功！'})
+    return render(request, 'add_course.html', {'success_context': '加選成功！'})
 
 def delete_course(request, code, id):
     delete= D1051831_course.objects.all().filter(code= code)

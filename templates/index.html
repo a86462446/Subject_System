@@ -7,11 +7,19 @@
 {% block content %}
 
     <script>
-        function sign(add){
+        function add_confirm(add){
             var yes= confirm("確定要加選嗎？")
 
             if(yes){
                     window.location.href= add;
+            }
+        }
+
+        function delete_confirm(ddelete){
+            var yes= confirm("確定要退選嗎？")
+
+            if(yes){
+                    window.location.href= ddelete;
             }
         }
     </script>
@@ -30,7 +38,7 @@
         {% for x in mycourses %}
         <tr>
             <td>
-                <input type="submit" value="加選" onclick="sign('{{x.id}}')">
+                <input type="submit" value="加選" onclick="add_confirm('{{x.id}}')">    
             </td>
             <td id="code">{{ x.code }}</td>
             <td id="name">{{ x.name }}</td>
@@ -56,9 +64,7 @@
         {% for y in D1051831_courses %}
         <tr>
             <td>
-                <a href="{{y.id}}/{{y.code}}">
-                    <input type="submit" value="退選">
-                </a>
+                <input type="submit" value="退選" onclick="delete_confirm('{{y.id}}/{{y.code}}')">
             </td>
             <td id="code">{{ y.code }}</td>
             <td id="name">{{ y.name }}</td>
