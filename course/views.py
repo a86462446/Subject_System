@@ -7,7 +7,6 @@ from django.http import HttpResponse
 from django.template import loader
 from .models import course, D1051831_course
 
-
 # 學生選課主頁
 @login_required(login_url="login")  # 限制直接存取登入後畫面
 def index(request):
@@ -63,16 +62,34 @@ def log_out(request):
 # 加選
 def add_course(request, id):
     add= course.objects.all()
+
+    add_start= add[id- 1].start_session
+    add_end= add[id- 1].end_session
+    add_week= add[id- 1].week
+    x= add_start
+
+    # 衝堂處理
+    if D1051831_course.objects.filter(week= add_week):
+
+        same_course= D1051831_course.objects.filter(week= add_week).get()
+        st_start= same_course.start_session
+        st_end= same_course.end_session
+        y= st_start
+
+        for i in range(add_end- add_start+ 1):
+            for j in range(st_end- st_start+ 1):
+                if x+ i== y+ j:
+                    return redirect('/')
+
+    # 相同課程處理
     if D1051831_course.objects.filter(code= add[id- 1].code):
         return redirect('/')
     
-    student= D1051831_course(code= add[id- 1].code, name= add[id- 1].name, classs= add[id- 1].classs, required_elective= add[id- 1].required_elective, credit= add[id- 1].credit, time= add[id- 1].time)
+    student= D1051831_course(code= add[id- 1].code, name= add[id- 1].name, classs= add[id- 1].classs, required_elective= add[id- 1].required_elective, credit= add[id- 1].credit, time= add[id- 1].time, start_session= add[id- 1].start_session, end_session= add[id- 1].end_session, week= add[id- 1].week)
     student.save()
-
     return redirect('/')
 
 def delete_course(request, code, id):
     delete= D1051831_course.objects.all().filter(code= code)
     delete.delete()
-
     return redirect('/')
