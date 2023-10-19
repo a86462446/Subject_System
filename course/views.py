@@ -3,6 +3,7 @@ from .forms import LoginForm, RegisterForm, SearchForm, SearchForm2
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from .models import course, D1051831_course
+from itertools import chain
 
 # 學生選課主頁
 @login_required(login_url="login")  # 限制直接存取登入後畫面
@@ -33,6 +34,7 @@ def index(request):
             search_session= request.POST.get("search_session")
 
             if search_week and search_session:
+                data= ''
                 if course.objects.filter(week= search_week):
                     for item in course.objects.filter(week= search_week):
                         st_start= item.start_session
@@ -41,7 +43,10 @@ def index(request):
 
                         for i in range(st_end- st_start+ 1):
                             if int(search_session)== y+ i:
-                                mydata= course.objects.filter(code= item).all()
+                                data= chain(data, course.objects.filter(code= item).all())
+                    
+                    mydata= data
+                                
             elif search_week:
                 if course.objects.filter(week= search_week):
                     mydata= course.objects.filter(week= search_week).all()
