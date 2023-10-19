@@ -1,20 +1,56 @@
 from django.shortcuts import render, redirect
-from .forms import LoginForm
-from .forms import RegisterForm
+from .forms import LoginForm, RegisterForm, SearchForm, SearchForm2
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
-from django.http import HttpResponse
-from django.template import loader
 from .models import course, D1051831_course
 
 # 學生選課主頁
 @login_required(login_url="login")  # 限制直接存取登入後畫面
 def index(request):
-    mydata = course.objects.all().values()  # 存取course資料庫內容
+    form= SearchForm()
+    form2= SearchForm2()
+
     D1051831_data= D1051831_course.objects.all().values()
+    mydata = course.objects.all().values()  # 存取course資料庫內容
+
+    if request.method== "POST":
+        # 判斷搜尋結果
+        if request.POST.get("search_name")or request.POST.get("search_code"):
+            search_name= request.POST.get("search_name")
+            search_code= request.POST.get("search_code")
+
+            if search_name and search_code:
+                if course.objects.filter(name= search_name, code= search_code):
+                    mydata= course.objects.filter(name= search_name, code= search_code).all()
+            elif search_code:
+                if course.objects.filter(code= search_code):
+                    mydata= course.objects.filter(code= search_code).all()
+            elif search_name:
+                if course.objects.filter(name= search_name):
+                    mydata= course.objects.filter(name= search_name).all()
+        elif request.POST.get("search_week")or request.POST.get("search_session"):
+            search_week= request.POST.get("search_week")
+            search_session= request.POST.get("search_session")
+
+            if search_week and search_session:
+                if course.objects.filter(week= search_week):
+                    for item in course.objects.filter(week= search_week):
+                        st_start= item.start_session
+                        st_end= item.end_session
+                        y= st_start
+
+                        for i in range(st_end- st_start+ 1):
+                            if int(search_session)== y+ i:
+                                mydata= course.objects.filter(code= item).all()
+            elif search_week:
+                if course.objects.filter(week= search_week):
+                    mydata= course.objects.filter(week= search_week).all()
+            
     context = {
         'mycourses': mydata,
-        'D1051831_courses': D1051831_data
+        'D1051831_courses': D1051831_data,
+        'form': form,
+        'form2': form2
     }
     return render(request, 'index.html', context)
 
@@ -88,6 +124,7 @@ def add_course(request, id):
     student.save()
     return render(request, 'add_course.html', {'success_context': '加選成功！'})
 
+# 退選
 def delete_course(request, code, id):
     delete= D1051831_course.objects.all().filter(code= code)
     delete.delete()
