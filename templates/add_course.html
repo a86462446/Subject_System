@@ -8,11 +8,13 @@
 
     <!-- 訊息 -->
     {% if success_context %}
-    <p>{{ success_context }}</p>
+        <p>{{ success_context }}</p>
     {% elif same_context %}
-    <p>{{ same_context }}</p>
+        <p>{{ same_context }}</p>
     {% elif conflict_context %}
-    <p>{{ conflict_context }}</p>
+        <p>{{ conflict_context }}</p>
+    {% elif max_context %}
+        <p>{{ max_context }}</p>
     {% endif %}
 
     <button type="submit" onclick="window.location.href= '/'">返回上一頁</button>

@@ -5,16 +5,15 @@
     <title>Document</title>
 </head>
 <body>
-    <h1>AuthDev</h1>
-    <h3>註冊</h3>
+    <h1>註冊</h1>
 
     <!-- 註冊功能 -->
     <form action="" method="POST">
         {% csrf_token %}
-        {{ form }}
 
-        <br />
-        <input class="btn btn-success" type="submit" value="" />
+        {{ registerform }}
+
+        <button type="submit">註冊</button>
     </form>
 </body>
 </html>

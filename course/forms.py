@@ -7,8 +7,12 @@ class RegisterForm(UserCreationForm):
         label="帳號",
         widget=forms.TextInput(attrs={'class': 'form-control'})
     )
-    password = forms.CharField(
+    password1 = forms.CharField(
         label="密碼",
+        widget=forms.PasswordInput(attrs={'class': 'form-control'})
+    )
+    password2 = forms.CharField(
+        label="密碼確認",
         widget=forms.PasswordInput(attrs={'class': 'form-control'})
     )
     name = forms.CharField(
@@ -16,12 +20,12 @@ class RegisterForm(UserCreationForm):
         widget=forms.TextInput(attrs={'class': 'form-control'})
     )
     classs = forms.CharField(
-        label="班級",
+        label="系級",
         widget=forms.TextInput(attrs={'class': 'form-control'})
     )
     class Meta:
         model = User
-        fields = ('username', 'password', 'name', 'classs')
+        fields = ('username', 'password1', 'password2', 'name', 'classs')
 
 
 class LoginForm(forms.Form):
