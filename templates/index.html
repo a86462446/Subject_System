@@ -1,263 +1,322 @@
-{% extends "base.html" %}
+{% load static %}
 
-{% block header %}
-    <h1>課程列表</h1>
-{% endblock %}
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link type= "text/css" rel= "stylesheet" href= "{% static '../static/css/index.css' %}">
+    <link rel="shortcut icon" href="../static/images/logo.ico" type="image/x-icon">
+    <title>茶裏王選課系統</title>
+</head>
 
-{% block content %}
+<script>
+    function add_confirm(add){
+        var yes= confirm("確定要加選嗎？")
 
-    <script>
-        function add_confirm(add){
-            var yes= confirm("確定要加選嗎？")
-
-            if(yes){
-                    window.location.href= add;
-            }
+        if(yes){
+                window.location.href= add;
         }
+    }
 
-        function delete_confirm(ddelete){
-            var yes= confirm("確定要退選嗎？")
+    function delete_confirm(ddelete){
+        var yes= confirm("確定要退選嗎？")
 
-            if(yes){
-                    window.location.href= ddelete;
-            }
+        if(yes){
+                window.location.href= ddelete;
         }
-    </script>
+    }
+</script>
 
-    <form id="form" action="" method="POST">
-        {% csrf_token %}
-        {{ form }}
+<body>
+    <div class="user-info">
+        <!-- 學生資訊 -->
+        {% if request.user.is_authenticated %}
+                <div class= "head">茶裏王選課系統</div>
+                <p>學號：{{request.user}}</p> 
+                {% for i in student_form %}
+                    {% if i.student_number == request.user.username %}
+                        <p>姓名：{{ i.student_name }}</p>
+                        <p>系級：{{ i.student_class }}</p>
+                        <p>學分：{{ i.student_credit }} / 25</p>
+                    {% endif %}
+                {% endfor %}
+        {% endif %}
 
-        <button type="submit">確認</button>
-    </form>
+        <!-- 登出功能 -->
+        <a class="btn" href="{% url 'Logout' %}" role="button">登出 &#187;</a>
+    </div>
 
-    <form id="form2" action="" method="POST">
-        {% csrf_token %}
-        {{ form2 }}
+    <div class= "body-left">
+        <p>課程資訊</p>
+        <div class= "search">
+            <form class= "search1" id="form" action="" method="POST">
+                {% csrf_token %}
+                {{ form.search_code.label_tag }}
+                {{ form.search_code }}
+                {{ form.search_name.label_tag }}
+                {{ form.search_name }}
 
-        <button type="submit">確認</button>
-    </form>
+                <button type="submit">確認</button>
+            </form>
 
-    <!-- 課程資訊 -->
-    <table border='1'>
-        <tr>
-        <th>加選</th>
-        <th>選課代碼</th>
-        <th>科目名稱</th>
-        <th>開課班級</th>
-        <th>必選修</th>
-        <th>學分</th>
-        <th>課程時間</th>
-        </tr>
-        {% for x in mycourses %}
-        <tr>
-            <td>
-                <input type="submit" value="加選" onclick="add_confirm('{{x.id}}')">    
-            </td>
-            <td id="code">{{ x.code }}</td>
-            <td id="name">{{ x.name }}</td>
-            <td id="class">{{ x.classs }}</td>
-            <td id="required_elective">{{ x.required_elective }}</td>
-            <td id="credit">{{ x.credit }}</td>
-            <td id="time">{{ x.week }} {{ x.time }}</td>
-        </tr>
-        {% endfor %}
-    </table>
+            <form class= "search2" id="form2" action="" method="POST">
+                {% csrf_token %}
+                {{ form2.search_week.label_tag }}
+                {{ form2.search_week }}
+                {{ form2.search_session.label_tag }}
+                {{ form2.search_session }}
 
-    <!-- 學生已選課程 -->
-    <table border='1'>
-        <tr>
-        <th>退選</th>
-        <th>選課代碼</th>
-        <th>科目名稱</th>
-        <th>開課班級</th>
-        <th>必選修</th>
-        <th>學分</th>
-        <th>課程時間</th>
-        </tr>
-        {% for y in Student_courses %}
-            {% if y.student_number == request.user.username %}
-                <tr>
-                    <td>
-                        <input type="submit" value="退選" onclick="delete_confirm('{{y.id}}/{{y.code}}')">
-                    </td>
-                    <td id="code">{{ y.code }}</td>
-                    <td id="name">{{ y.name }}</td>
-                    <td id="class">{{ y.classs }}</td>
-                    <td id="required_elective">{{ y.required_elective }}</td>
-                    <td id="credit">{{ y.credit }}</td>
-                    <td id="time">{{ y.week }} {{ y.time }}</td>
-                </tr>
-            {% endif %}
-        {% endfor %}
-    </table>
+                <button type="submit">確認</button>
+            </form>
+        </div>
 
-    <table border="1">
-        <tr>
-            <th colspan="2"></th>
-            <th>星期一</th>
-            <th>星期二</th>
-            <th>星期三</th>
-            <th>星期四</th>
-            <th>星期五</th>
-            <th>星期六</th>
-            <th>星期日</th>
-        </tr>
-        <tr>
-            <td>1</td>
-            <td>08:10 - 09:00</td>
-            <td>{% for z in Student_courses %}{% if z.student_number == request.user.username %}{% if "星期一" in z.week %}{% if "08:10" in z.time %}{{ z.name }}{% endif %}{% endif %}{% endif %}{% endfor %}</td>
-            <td>{% for z in Student_courses %}{% if z.student_number == request.user.username %}{% if "星期二" in z.week %}{% if "08:10" in z.time %}{{ z.name }}{% endif %}{% endif %}{% endif %}{% endfor %}</td>
-            <td>{% for z in Student_courses %}{% if z.student_number == request.user.username %}{% if "星期三" in z.week %}{% if "08:10" in z.time %}{{ z.name }}{% endif %}{% endif %}{% endif %}{% endfor %}</td>
-            <td>{% for z in Student_courses %}{% if z.student_number == request.user.username %}{% if "星期四" in z.week %}{% if "08:10" in z.time %}{{ z.name }}{% endif %}{% endif %}{% endif %}{% endfor %}</td>
-            <td>{% for z in Student_courses %}{% if z.student_number == request.user.username %}{% if "星期五" in z.week %}{% if "08:10" in z.time %}{{ z.name }}{% endif %}{% endif %}{% endif %}{% endfor %}</td>
-            <td></td>
-            <td></td>
-        </tr>
-        <tr>
-            <td>2</td>
-            <td>09:10 - 10:00</td>
-            <td>{% for z in Student_courses %}{% if z.student_number == request.user.username %}{% if "星期一" in z.week %}{% if "09:10" in z.time %}{{ z.name }}{% elif "10:00" in z.time %}{{ z.name }}{% elif "8:10 - 11:00" in z.time%}{{ z.name }}{% endif %}{% endif %}{% endif %}{% endfor %}</td>
-            <td>{% for z in Student_courses %}{% if z.student_number == request.user.username %}{% if "星期二" in z.week %}{% if "09:10" in z.time %}{{ z.name }}{% elif "10:00" in z.time %}{{ z.name }}{% elif "8:10 - 11:00" in z.time%}{{ z.name }}{% endif %}{% endif %}{% endif %}{% endfor %}</td>
-            <td>{% for z in Student_courses %}{% if z.student_number == request.user.username %}{% if "星期三" in z.week %}{% if "09:10" in z.time %}{{ z.name }}{% elif "10:00" in z.time %}{{ z.name }}{% elif "8:10 - 11:00" in z.time%}{{ z.name }}{% endif %}{% endif %}{% endif %}{% endfor %}</td>
-            <td>{% for z in Student_courses %}{% if z.student_number == request.user.username %}{% if "星期四" in z.week %}{% if "09:10" in z.time %}{{ z.name }}{% elif "10:00" in z.time %}{{ z.name }}{% elif "8:10 - 11:00" in z.time%}{{ z.name }}{% endif %}{% endif %}{% endif %}{% endfor %}</td>
-            <td>{% for z in Student_courses %}{% if z.student_number == request.user.username %}{% if "星期五" in z.week %}{% if "09:10" in z.time %}{{ z.name }}{% elif "10:00" in z.time %}{{ z.name }}{% elif "8:10 - 11:00" in z.time%}{{ z.name }}{% endif %}{% endif %}{% endif %}{% endfor %}</td>
-            <td></td>
-            <td></td>
-        </tr>
-        <tr>
-            <td>3</td>
-            <td>10:10 - 11:00</td>
-            <td>{% for z in Student_courses %}{% if z.student_number == request.user.username %}{% if "星期一" in z.week %}{% if "10:10" in z.time %}{{ z.name }}{% elif "11:00" in z.time %}{{ z.name }}{% elif "9:10 - 12:00" in z.time%}{{ z.name }}{% endif %}{% endif %}{% endif %}{% endfor %}</td>
-            <td>{% for z in Student_courses %}{% if z.student_number == request.user.username %}{% if "星期二" in z.week %}{% if "10:10" in z.time %}{{ z.name }}{% elif "11:00" in z.time %}{{ z.name }}{% elif "9:10 - 12:00" in z.time%}{{ z.name }}{% endif %}{% endif %}{% endif %}{% endfor %}</td>
-            <td>{% for z in Student_courses %}{% if z.student_number == request.user.username %}{% if "星期三" in z.week %}{% if "10:10" in z.time %}{{ z.name }}{% elif "11:00" in z.time %}{{ z.name }}{% elif "9:10 - 12:00" in z.time%}{{ z.name }}{% endif %}{% endif %}{% endif %}{% endfor %}</td>
-            <td>{% for z in Student_courses %}{% if z.student_number == request.user.username %}{% if "星期四" in z.week %}{% if "10:10" in z.time %}{{ z.name }}{% elif "11:00" in z.time %}{{ z.name }}{% elif "9:10 - 12:00" in z.time%}{{ z.name }}{% endif %}{% endif %}{% endif %}{% endfor %}</td>
-            <td>{% for z in Student_courses %}{% if z.student_number == request.user.username %}{% if "星期五" in z.week %}{% if "10:10" in z.time %}{{ z.name }}{% elif "11:00" in z.time %}{{ z.name }}{% elif "9:10 - 12:00" in z.time%}{{ z.name }}{% endif %}{% endif %}{% endif %}{% endfor %}</td>
-            <td></td>
-            <td></td>
-        </tr>
-        <tr>
-            <td>4</td>
-            <td>11:10 - 12:00</td>
-            <td>{% for z in Student_courses %}{% if z.student_number == request.user.username %}{% if "星期一" in z.week %}{% if "12:00" in z.time %}{{ z.name }}{% endif %}{% endif %}{% endif %}{% endfor %}</td>
-            <td>{% for z in Student_courses %}{% if z.student_number == request.user.username %}{% if "星期二" in z.week %}{% if "12:00" in z.time %}{{ z.name }}{% endif %}{% endif %}{% endif %}{% endfor %}</td>
-            <td>{% for z in Student_courses %}{% if z.student_number == request.user.username %}{% if "星期三" in z.week %}{% if "12:00" in z.time %}{{ z.name }}{% endif %}{% endif %}{% endif %}{% endfor %}</td>
-            <td>{% for z in Student_courses %}{% if z.student_number == request.user.username %}{% if "星期四" in z.week %}{% if "12:00" in z.time %}{{ z.name }}{% endif %}{% endif %}{% endif %}{% endfor %}</td>
-            <td>{% for z in Student_courses %}{% if z.student_number == request.user.username %}{% if "星期五" in z.week %}{% if "12:00" in z.time %}{{ z.name }}{% endif %}{% endif %}{% endif %}{% endfor %}</td>
-            <td></td>
-            <td></td>
-        </tr>
-        <tr>
-            <td>5</td>
-            <td>12:10 - 13:00</td>
-            <td></td>
-            <td></td>
-            <td></td>
-            <td></td>
-            <td></td>
-            <td></td>
-            <td></td>
-        </tr>
-        <tr>
-            <td>6</td>
-            <td>13:10 - 14:00</td>
-            <td>{% for z in Student_courses %}{% if z.student_number == request.user.username %}{% if "星期一" in z.week %}{% if "13:10" in z.time %}{{ z.name }}{% endif %}{% endif %}{% endif %}{% endfor %}</td>
-            <td>{% for z in Student_courses %}{% if z.student_number == request.user.username %}{% if "星期二" in z.week %}{% if "13:10" in z.time %}{{ z.name }}{% endif %}{% endif %}{% endif %}{% endfor %}</td>
-            <td>{% for z in Student_courses %}{% if z.student_number == request.user.username %}{% if "星期三" in z.week %}{% if "13:10" in z.time %}{{ z.name }}{% endif %}{% endif %}{% endif %}{% endfor %}</td>
-            <td>{% for z in Student_courses %}{% if z.student_number == request.user.username %}{% if "星期四" in z.week %}{% if "13:10" in z.time %}{{ z.name }}{% endif %}{% endif %}{% endif %}{% endfor %}</td>
-            <td>{% for z in Student_courses %}{% if z.student_number == request.user.username %}{% if "星期五" in z.week %}{% if "13:10" in z.time %}{{ z.name }}{% endif %}{% endif %}{% endif %}{% endfor %}</td>
-            <td></td>
-            <td></td>
-        </tr>
-        <tr>
-            <td>7</td>
-            <td>14:10 - 15:00</td>
-            <td>{% for z in Student_courses %}{% if z.student_number == request.user.username %}{% if "星期一" in z.week %}{% if "14:10" in z.time %}{{ z.name }}{% elif "15:00" in z.time %}{{ z.name }}{% elif "13:10 - 16:00" in z.time%}{{ z.name }}{% endif %}{% endif %}{% endif %}{% endfor %}</td>
-            <td>{% for z in Student_courses %}{% if z.student_number == request.user.username %}{% if "星期二" in z.week %}{% if "14:10" in z.time %}{{ z.name }}{% elif "15:00" in z.time %}{{ z.name }}{% elif "13:10 - 16:00" in z.time%}{{ z.name }}{% endif %}{% endif %}{% endif %}{% endfor %}</td>
-            <td>{% for z in Student_courses %}{% if z.student_number == request.user.username %}{% if "星期三" in z.week %}{% if "14:10" in z.time %}{{ z.name }}{% elif "15:00" in z.time %}{{ z.name }}{% elif "13:10 - 16:00" in z.time%}{{ z.name }}{% endif %}{% endif %}{% endif %}{% endfor %}</td>
-            <td>{% for z in Student_courses %}{% if z.student_number == request.user.username %}{% if "星期四" in z.week %}{% if "14:10" in z.time %}{{ z.name }}{% elif "15:00" in z.time %}{{ z.name }}{% elif "13:10 - 16:00" in z.time%}{{ z.name }}{% endif %}{% endif %}{% endif %}{% endfor %}</td>
-            <td>{% for z in Student_courses %}{% if z.student_number == request.user.username %}{% if "星期五" in z.week %}{% if "14:10" in z.time %}{{ z.name }}{% elif "15:00" in z.time %}{{ z.name }}{% elif "13:10 - 16:00" in z.time%}{{ z.name }}{% endif %}{% endif %}{% endif %}{% endfor %}</td>
-            <td></td>
-            <td></td>
-        </tr>
-        <tr>
-            <td>8</td>
-            <td>15:10 - 16:00</td>
-            <td>{% for z in Student_courses %}{% if z.student_number == request.user.username %}{% if "星期一" in z.week %}{% if "15:10" in z.time %}{{ z.name }}{% elif "16:00" in z.time %}{{ z.name }}{% elif "14:10 - 17:00" in z.time%}{{ z.name }}{% endif %}{% endif %}{% endif %}{% endfor %}</td>
-            <td>{% for z in Student_courses %}{% if z.student_number == request.user.username %}{% if "星期二" in z.week %}{% if "15:10" in z.time %}{{ z.name }}{% elif "16:00" in z.time %}{{ z.name }}{% elif "14:10 - 17:00" in z.time%}{{ z.name }}{% endif %}{% endif %}{% endif %}{% endfor %}</td>
-            <td>{% for z in Student_courses %}{% if z.student_number == request.user.username %}{% if "星期三" in z.week %}{% if "15:10" in z.time %}{{ z.name }}{% elif "16:00" in z.time %}{{ z.name }}{% elif "14:10 - 17:00" in z.time%}{{ z.name }}{% endif %}{% endif %}{% endif %}{% endfor %}</td>
-            <td>{% for z in Student_courses %}{% if z.student_number == request.user.username %}{% if "星期四" in z.week %}{% if "15:10" in z.time %}{{ z.name }}{% elif "16:00" in z.time %}{{ z.name }}{% elif "14:10 - 17:00" in z.time%}{{ z.name }}{% endif %}{% endif %}{% endif %}{% endfor %}</td>
-            <td>{% for z in Student_courses %}{% if z.student_number == request.user.username %}{% if "星期五" in z.week %}{% if "15:10" in z.time %}{{ z.name }}{% elif "16:00" in z.time %}{{ z.name }}{% elif "14:10 - 17:00" in z.time%}{{ z.name }}{% endif %}{% endif %}{% endif %}{% endfor %}</td>
-            <td></td>
-            <td></td>
-        </tr>
-        <tr>
-            <td>9</td>
-            <td>16:10 - 17:00</td>
-            <td>{% for z in Student_courses %}{% if z.student_number == request.user.username %}{% if "星期一" in z.week %}{% if "16:10" in z.time %}{{ z.name }}{% elif "17:00" in z.time %}{{ z.name }}{% elif "15:10 - 18:00" in z.time%}{{ z.name }}{% endif %}{% endif %}{% endif %}{% endfor %}</td>
-            <td>{% for z in Student_courses %}{% if z.student_number == request.user.username %}{% if "星期二" in z.week %}{% if "16:10" in z.time %}{{ z.name }}{% elif "17:00" in z.time %}{{ z.name }}{% elif "15:10 - 18:00" in z.time%}{{ z.name }}{% endif %}{% endif %}{% endif %}{% endfor %}</td>
-            <td>{% for z in Student_courses %}{% if z.student_number == request.user.username %}{% if "星期三" in z.week %}{% if "16:10" in z.time %}{{ z.name }}{% elif "17:00" in z.time %}{{ z.name }}{% elif "15:10 - 18:00" in z.time%}{{ z.name }}{% endif %}{% endif %}{% endif %}{% endfor %}</td>
-            <td>{% for z in Student_courses %}{% if z.student_number == request.user.username %}{% if "星期四" in z.week %}{% if "16:10" in z.time %}{{ z.name }}{% elif "17:00" in z.time %}{{ z.name }}{% elif "15:10 - 18:00" in z.time%}{{ z.name }}{% endif %}{% endif %}{% endif %}{% endfor %}</td>
-            <td>{% for z in Student_courses %}{% if z.student_number == request.user.username %}{% if "星期五" in z.week %}{% if "16:10" in z.time %}{{ z.name }}{% elif "17:00" in z.time %}{{ z.name }}{% elif "15:10 - 18:00" in z.time%}{{ z.name }}{% endif %}{% endif %}{% endif %}{% endfor %}</td>
-            <td></td>
-            <td></td>
-        </tr>
-        <tr>
-            <td>10</td>
-            <td>17:10 - 18:00</td>
-            <td>{% for z in Student_courses %}{% if z.student_number == request.user.username %}{% if "星期一" in z.week %}{% if "18:00" in z.time %}{{ z.name }}{% endif %}{% endif %}{% endif %}{% endfor %}</td>
-            <td>{% for z in Student_courses %}{% if z.student_number == request.user.username %}{% if "星期二" in z.week %}{% if "18:00" in z.time %}{{ z.name }}{% endif %}{% endif %}{% endif %}{% endfor %}</td>
-            <td>{% for z in Student_courses %}{% if z.student_number == request.user.username %}{% if "星期三" in z.week %}{% if "18:00" in z.time %}{{ z.name }}{% endif %}{% endif %}{% endif %}{% endfor %}</td>
-            <td>{% for z in Student_courses %}{% if z.student_number == request.user.username %}{% if "星期四" in z.week %}{% if "18:00" in z.time %}{{ z.name }}{% endif %}{% endif %}{% endif %}{% endfor %}</td>
-            <td>{% for z in Student_courses %}{% if z.student_number == request.user.username %}{% if "星期五" in z.week %}{% if "18:00" in z.time %}{{ z.name }}{% endif %}{% endif %}{% endif %}{% endfor %}</td>
-            <td></td>
-            <td></td>
-        </tr>
-        <tr>
-            <td>11</td>
-            <td>18:30 - 19:20</td>
-            <td>{% for z in Student_courses %}{% if z.student_number == request.user.username %}{% if "星期一" in z.week %}{% if "18:30" in z.time %}{{ z.name }}{% endif %}{% endif %}{% endif %}{% endfor %}</td>
-            <td>{% for z in Student_courses %}{% if z.student_number == request.user.username %}{% if "星期二" in z.week %}{% if "18:30" in z.time %}{{ z.name }}{% endif %}{% endif %}{% endif %}{% endfor %}</td>
-            <td>{% for z in Student_courses %}{% if z.student_number == request.user.username %}{% if "星期三" in z.week %}{% if "18:30" in z.time %}{{ z.name }}{% endif %}{% endif %}{% endif %}{% endfor %}</td>
-            <td>{% for z in Student_courses %}{% if z.student_number == request.user.username %}{% if "星期四" in z.week %}{% if "18:30" in z.time %}{{ z.name }}{% endif %}{% endif %}{% endif %}{% endfor %}</td>
-            <td>{% for z in Student_courses %}{% if z.student_number == request.user.username %}{% if "星期五" in z.week %}{% if "18:30" in z.time %}{{ z.name }}{% endif %}{% endif %}{% endif %}{% endfor %}</td>
-            <td></td>
-            <td></td>
-        </tr>
-        <tr>
-            <td>12</td>
-            <td>19:25 - 20:15</td>
-            <td>{% for z in Student_courses %}{% if z.student_number == request.user.username %}{% if "星期一" in z.week %}{% if "19:25" in z.time %}{{ z.name }}{% elif "20:15" in z.time %}{{ z.name }}{% elif "18:30 - 21:15" in z.time%}{{ z.name }}{% endif %}{% endif %}{% endif %}{% endfor %}</td>
-            <td>{% for z in Student_courses %}{% if z.student_number == request.user.username %}{% if "星期二" in z.week %}{% if "19:25" in z.time %}{{ z.name }}{% elif "20:15" in z.time %}{{ z.name }}{% elif "18:30 - 21:15" in z.time%}{{ z.name }}{% endif %}{% endif %}{% endif %}{% endfor %}</td>
-            <td>{% for z in Student_courses %}{% if z.student_number == request.user.username %}{% if "星期三" in z.week %}{% if "19:25" in z.time %}{{ z.name }}{% elif "20:15" in z.time %}{{ z.name }}{% elif "18:30 - 21:15" in z.time%}{{ z.name }}{% endif %}{% endif %}{% endif %}{% endfor %}</td>
-            <td>{% for z in Student_courses %}{% if z.student_number == request.user.username %}{% if "星期四" in z.week %}{% if "19:25" in z.time %}{{ z.name }}{% elif "20:15" in z.time %}{{ z.name }}{% elif "18:30 - 21:15" in z.time%}{{ z.name }}{% endif %}{% endif %}{% endif %}{% endfor %}</td>
-            <td>{% for z in Student_courses %}{% if z.student_number == request.user.username %}{% if "星期五" in z.week %}{% if "19:25" in z.time %}{{ z.name }}{% elif "20:15" in z.time %}{{ z.name }}{% elif "18:30 - 21:15" in z.time%}{{ z.name }}{% endif %}{% endif %}{% endif %}{% endfor %}</td>
-            <td></td>
-            <td></td>
-        </tr>
-        <tr>
-            <td>13</td>
-            <td>20:25 - 21:15</td>
-            <td>{% for z in Student_courses %}{% if z.student_number == request.user.username %}{% if "星期一" in z.week %}{% if "20:25" in z.time %}{{ z.name }}{% elif "21:15" in z.time %}{{ z.name }}{% elif "19:25 - 21:15" in z.time%}{{ z.name }}{% endif %}{% endif %}{% endif %}{% endfor %}</td>
-            <td>{% for z in Student_courses %}{% if z.student_number == request.user.username %}{% if "星期二" in z.week %}{% if "20:25" in z.time %}{{ z.name }}{% elif "21:15" in z.time %}{{ z.name }}{% elif "19:25 - 21:15" in z.time%}{{ z.name }}{% endif %}{% endif %}{% endif %}{% endfor %}</td>
-            <td>{% for z in Student_courses %}{% if z.student_number == request.user.username %}{% if "星期三" in z.week %}{% if "20:25" in z.time %}{{ z.name }}{% elif "21:15" in z.time %}{{ z.name }}{% elif "19:25 - 21:15" in z.time%}{{ z.name }}{% endif %}{% endif %}{% endif %}{% endfor %}</td>
-            <td>{% for z in Student_courses %}{% if z.student_number == request.user.username %}{% if "星期四" in z.week %}{% if "20:25" in z.time %}{{ z.name }}{% elif "21:15" in z.time %}{{ z.name }}{% elif "19:25 - 21:15" in z.time%}{{ z.name }}{% endif %}{% endif %}{% endif %}{% endfor %}</td>
-            <td>{% for z in Student_courses %}{% if z.student_number == request.user.username %}{% if "星期五" in z.week %}{% if "20:25" in z.time %}{{ z.name }}{% elif "21:15" in z.time %}{{ z.name }}{% elif "19:25 - 21:15" in z.time%}{{ z.name }}{% endif %}{% endif %}{% endif %}{% endfor %}</td>
-            <td></td>
-            <td></td>
-        </tr>
-        <tr>
-            <td>14</td>
-            <td>21:20 - 22:10</td>
-            <td>{% for z in Student_courses %}{% if z.student_number == request.user.username %}{% if "星期一" in z.week %}{% if "22:10" in z.time %}{{ z.name }}{% endif %}{% endif %}{% endif %}{% endfor %}</td>
-            <td>{% for z in Student_courses %}{% if z.student_number == request.user.username %}{% if "星期二" in z.week %}{% if "22:10" in z.time %}{{ z.name }}{% endif %}{% endif %}{% endif %}{% endfor %}</td>
-            <td>{% for z in Student_courses %}{% if z.student_number == request.user.username %}{% if "星期三" in z.week %}{% if "22:10" in z.time %}{{ z.name }}{% endif %}{% endif %}{% endif %}{% endfor %}</td>
-            <td>{% for z in Student_courses %}{% if z.student_number == request.user.username %}{% if "星期四" in z.week %}{% if "22:10" in z.time %}{{ z.name }}{% endif %}{% endif %}{% endif %}{% endfor %}</td>
-            <td>{% for z in Student_courses %}{% if z.student_number == request.user.username %}{% if "星期五" in z.week %}{% if "22:10" in z.time %}{{ z.name }}{% endif %}{% endif %}{% endif %}{% endfor %}</td>
-            <td></td>
-            <td></td>
-        </tr>
-    </table>
+        <div class= "body-table">
+            <!-- 課程資訊 -->
+            <table border='1'>
+                <thead>
+                    <tr>
+                        <th>加選</th>
+                        <th>選課代碼</th>
+                        <th>科目名稱</th>
+                        <th>開課班級</th>
+                        <th>必選修</th>
+                        <th>學分</th>
+                        <th>課程時間</th>
+                    </tr>
+                </thead>
+                {% for x in mycourses %}
+                <tbody>
+                    <tr>
+                        <td>
+                            <input type="submit" value="加選" onclick="add_confirm('{{x.id}}')">    
+                        </td>
+                        <td id="code">{{ x.code }}</td>
+                        <td id="name">{{ x.name }}</td>
+                        <td id="class">{{ x.classs }}</td>
+                        <td id="required_elective">{{ x.required_elective }}</td>
+                        <td id="credit">{{ x.credit }}</td>
+                        <td id="time">{{ x.week }} {{ x.time }}</td>
+                    </tr>
+                </tbody>
+                {% endfor %}
+            </table>
+        </div>
+    </div>
 
-{% endblock %}
+    <div class= "body-right">
+        <!-- 學生已選課程 -->
+        <p>已選課程</p>
+        <div class= "body-table">
+            <table border='1'>
+                <thead>
+                    <tr>
+                        <th>退選</th>
+                        <th>選課代碼</th>
+                        <th>科目名稱</th>
+                        <th>開課班級</th>
+                        <th>必選修</th>
+                        <th>學分</th>
+                        <th>課程時間</th>
+                    </tr>
+                </thead>
+                {% for y in Student_courses %}
+                    {% if y.student_number == request.user.username %}
+                        <tbody>
+                            <tr>
+                                <td>
+                                    <input type="submit" value="退選" onclick="delete_confirm('{{y.id}}/{{y.code}}')">
+                                </td>
+                                <td id="code">{{ y.code }}</td>
+                                <td id="name">{{ y.name }}</td>
+                                <td id="class">{{ y.classs }}</td>
+                                <td id="required_elective">{{ y.required_elective }}</td>
+                                <td id="credit">{{ y.credit }}</td>
+                                <td id="time">{{ y.week }} {{ y.time }}</td>
+                            </tr>
+                        </tbody>
+                    {% endif %}
+                {% endfor %}
+            </table>
+        </div>
+    </div>
+
+    <div class= "bottom">
+        <p>課表資訊</p>
+        <table border="1">
+            <tr>
+                <th colspan="2"></th>
+                <th>星期一</th>
+                <th>星期二</th>
+                <th>星期三</th>
+                <th>星期四</th>
+                <th>星期五</th>
+                <th>星期六</th>
+                <th>星期日</th>
+            </tr>
+            <tr>
+                <td>1</td>
+                <td>08:10 - 09:00</td>
+                <td>{% for z in Student_courses %}{% if z.student_number == request.user.username %}{% if "星期一" in z.week %}{% if "08:10" in z.time %}{{ z.name }}{% endif %}{% endif %}{% endif %}{% endfor %}</td>
+                <td>{% for z in Student_courses %}{% if z.student_number == request.user.username %}{% if "星期二" in z.week %}{% if "08:10" in z.time %}{{ z.name }}{% endif %}{% endif %}{% endif %}{% endfor %}</td>
+                <td>{% for z in Student_courses %}{% if z.student_number == request.user.username %}{% if "星期三" in z.week %}{% if "08:10" in z.time %}{{ z.name }}{% endif %}{% endif %}{% endif %}{% endfor %}</td>
+                <td>{% for z in Student_courses %}{% if z.student_number == request.user.username %}{% if "星期四" in z.week %}{% if "08:10" in z.time %}{{ z.name }}{% endif %}{% endif %}{% endif %}{% endfor %}</td>
+                <td>{% for z in Student_courses %}{% if z.student_number == request.user.username %}{% if "星期五" in z.week %}{% if "08:10" in z.time %}{{ z.name }}{% endif %}{% endif %}{% endif %}{% endfor %}</td>
+                <td></td>
+                <td></td>
+            </tr>
+            <tr>
+                <td>2</td>
+                <td>09:10 - 10:00</td>
+                <td>{% for z in Student_courses %}{% if z.student_number == request.user.username %}{% if "星期一" in z.week %}{% if "09:10" in z.time %}{{ z.name }}{% elif "10:00" in z.time %}{{ z.name }}{% elif "8:10 - 11:00" in z.time%}{{ z.name }}{% endif %}{% endif %}{% endif %}{% endfor %}</td>
+                <td>{% for z in Student_courses %}{% if z.student_number == request.user.username %}{% if "星期二" in z.week %}{% if "09:10" in z.time %}{{ z.name }}{% elif "10:00" in z.time %}{{ z.name }}{% elif "8:10 - 11:00" in z.time%}{{ z.name }}{% endif %}{% endif %}{% endif %}{% endfor %}</td>
+                <td>{% for z in Student_courses %}{% if z.student_number == request.user.username %}{% if "星期三" in z.week %}{% if "09:10" in z.time %}{{ z.name }}{% elif "10:00" in z.time %}{{ z.name }}{% elif "8:10 - 11:00" in z.time%}{{ z.name }}{% endif %}{% endif %}{% endif %}{% endfor %}</td>
+                <td>{% for z in Student_courses %}{% if z.student_number == request.user.username %}{% if "星期四" in z.week %}{% if "09:10" in z.time %}{{ z.name }}{% elif "10:00" in z.time %}{{ z.name }}{% elif "8:10 - 11:00" in z.time%}{{ z.name }}{% endif %}{% endif %}{% endif %}{% endfor %}</td>
+                <td>{% for z in Student_courses %}{% if z.student_number == request.user.username %}{% if "星期五" in z.week %}{% if "09:10" in z.time %}{{ z.name }}{% elif "10:00" in z.time %}{{ z.name }}{% elif "8:10 - 11:00" in z.time%}{{ z.name }}{% endif %}{% endif %}{% endif %}{% endfor %}</td>
+                <td></td>
+                <td></td>
+            </tr>
+            <tr>
+                <td>3</td>
+                <td>10:10 - 11:00</td>
+                <td>{% for z in Student_courses %}{% if z.student_number == request.user.username %}{% if "星期一" in z.week %}{% if "10:10" in z.time %}{{ z.name }}{% elif "11:00" in z.time %}{{ z.name }}{% elif "9:10 - 12:00" in z.time%}{{ z.name }}{% endif %}{% endif %}{% endif %}{% endfor %}</td>
+                <td>{% for z in Student_courses %}{% if z.student_number == request.user.username %}{% if "星期二" in z.week %}{% if "10:10" in z.time %}{{ z.name }}{% elif "11:00" in z.time %}{{ z.name }}{% elif "9:10 - 12:00" in z.time%}{{ z.name }}{% endif %}{% endif %}{% endif %}{% endfor %}</td>
+                <td>{% for z in Student_courses %}{% if z.student_number == request.user.username %}{% if "星期三" in z.week %}{% if "10:10" in z.time %}{{ z.name }}{% elif "11:00" in z.time %}{{ z.name }}{% elif "9:10 - 12:00" in z.time%}{{ z.name }}{% endif %}{% endif %}{% endif %}{% endfor %}</td>
+                <td>{% for z in Student_courses %}{% if z.student_number == request.user.username %}{% if "星期四" in z.week %}{% if "10:10" in z.time %}{{ z.name }}{% elif "11:00" in z.time %}{{ z.name }}{% elif "9:10 - 12:00" in z.time%}{{ z.name }}{% endif %}{% endif %}{% endif %}{% endfor %}</td>
+                <td>{% for z in Student_courses %}{% if z.student_number == request.user.username %}{% if "星期五" in z.week %}{% if "10:10" in z.time %}{{ z.name }}{% elif "11:00" in z.time %}{{ z.name }}{% elif "9:10 - 12:00" in z.time%}{{ z.name }}{% endif %}{% endif %}{% endif %}{% endfor %}</td>
+                <td></td>
+                <td></td>
+            </tr>
+            <tr>
+                <td>4</td>
+                <td>11:10 - 12:00</td>
+                <td>{% for z in Student_courses %}{% if z.student_number == request.user.username %}{% if "星期一" in z.week %}{% if "12:00" in z.time %}{{ z.name }}{% endif %}{% endif %}{% endif %}{% endfor %}</td>
+                <td>{% for z in Student_courses %}{% if z.student_number == request.user.username %}{% if "星期二" in z.week %}{% if "12:00" in z.time %}{{ z.name }}{% endif %}{% endif %}{% endif %}{% endfor %}</td>
+                <td>{% for z in Student_courses %}{% if z.student_number == request.user.username %}{% if "星期三" in z.week %}{% if "12:00" in z.time %}{{ z.name }}{% endif %}{% endif %}{% endif %}{% endfor %}</td>
+                <td>{% for z in Student_courses %}{% if z.student_number == request.user.username %}{% if "星期四" in z.week %}{% if "12:00" in z.time %}{{ z.name }}{% endif %}{% endif %}{% endif %}{% endfor %}</td>
+                <td>{% for z in Student_courses %}{% if z.student_number == request.user.username %}{% if "星期五" in z.week %}{% if "12:00" in z.time %}{{ z.name }}{% endif %}{% endif %}{% endif %}{% endfor %}</td>
+                <td></td>
+                <td></td>
+            </tr>
+            <tr>
+                <td>5</td>
+                <td>12:10 - 13:00</td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+            </tr>
+            <tr>
+                <td>6</td>
+                <td>13:10 - 14:00</td>
+                <td>{% for z in Student_courses %}{% if z.student_number == request.user.username %}{% if "星期一" in z.week %}{% if "13:10" in z.time %}{{ z.name }}{% endif %}{% endif %}{% endif %}{% endfor %}</td>
+                <td>{% for z in Student_courses %}{% if z.student_number == request.user.username %}{% if "星期二" in z.week %}{% if "13:10" in z.time %}{{ z.name }}{% endif %}{% endif %}{% endif %}{% endfor %}</td>
+                <td>{% for z in Student_courses %}{% if z.student_number == request.user.username %}{% if "星期三" in z.week %}{% if "13:10" in z.time %}{{ z.name }}{% endif %}{% endif %}{% endif %}{% endfor %}</td>
+                <td>{% for z in Student_courses %}{% if z.student_number == request.user.username %}{% if "星期四" in z.week %}{% if "13:10" in z.time %}{{ z.name }}{% endif %}{% endif %}{% endif %}{% endfor %}</td>
+                <td>{% for z in Student_courses %}{% if z.student_number == request.user.username %}{% if "星期五" in z.week %}{% if "13:10" in z.time %}{{ z.name }}{% endif %}{% endif %}{% endif %}{% endfor %}</td>
+                <td></td>
+                <td></td>
+            </tr>
+            <tr>
+                <td>7</td>
+                <td>14:10 - 15:00</td>
+                <td>{% for z in Student_courses %}{% if z.student_number == request.user.username %}{% if "星期一" in z.week %}{% if "14:10" in z.time %}{{ z.name }}{% elif "15:00" in z.time %}{{ z.name }}{% elif "13:10 - 16:00" in z.time%}{{ z.name }}{% endif %}{% endif %}{% endif %}{% endfor %}</td>
+                <td>{% for z in Student_courses %}{% if z.student_number == request.user.username %}{% if "星期二" in z.week %}{% if "14:10" in z.time %}{{ z.name }}{% elif "15:00" in z.time %}{{ z.name }}{% elif "13:10 - 16:00" in z.time%}{{ z.name }}{% endif %}{% endif %}{% endif %}{% endfor %}</td>
+                <td>{% for z in Student_courses %}{% if z.student_number == request.user.username %}{% if "星期三" in z.week %}{% if "14:10" in z.time %}{{ z.name }}{% elif "15:00" in z.time %}{{ z.name }}{% elif "13:10 - 16:00" in z.time%}{{ z.name }}{% endif %}{% endif %}{% endif %}{% endfor %}</td>
+                <td>{% for z in Student_courses %}{% if z.student_number == request.user.username %}{% if "星期四" in z.week %}{% if "14:10" in z.time %}{{ z.name }}{% elif "15:00" in z.time %}{{ z.name }}{% elif "13:10 - 16:00" in z.time%}{{ z.name }}{% endif %}{% endif %}{% endif %}{% endfor %}</td>
+                <td>{% for z in Student_courses %}{% if z.student_number == request.user.username %}{% if "星期五" in z.week %}{% if "14:10" in z.time %}{{ z.name }}{% elif "15:00" in z.time %}{{ z.name }}{% elif "13:10 - 16:00" in z.time%}{{ z.name }}{% endif %}{% endif %}{% endif %}{% endfor %}</td>
+                <td></td>
+                <td></td>
+            </tr>
+            <tr>
+                <td>8</td>
+                <td>15:10 - 16:00</td>
+                <td>{% for z in Student_courses %}{% if z.student_number == request.user.username %}{% if "星期一" in z.week %}{% if "15:10" in z.time %}{{ z.name }}{% elif "16:00" in z.time %}{{ z.name }}{% elif "14:10 - 17:00" in z.time%}{{ z.name }}{% endif %}{% endif %}{% endif %}{% endfor %}</td>
+                <td>{% for z in Student_courses %}{% if z.student_number == request.user.username %}{% if "星期二" in z.week %}{% if "15:10" in z.time %}{{ z.name }}{% elif "16:00" in z.time %}{{ z.name }}{% elif "14:10 - 17:00" in z.time%}{{ z.name }}{% endif %}{% endif %}{% endif %}{% endfor %}</td>
+                <td>{% for z in Student_courses %}{% if z.student_number == request.user.username %}{% if "星期三" in z.week %}{% if "15:10" in z.time %}{{ z.name }}{% elif "16:00" in z.time %}{{ z.name }}{% elif "14:10 - 17:00" in z.time%}{{ z.name }}{% endif %}{% endif %}{% endif %}{% endfor %}</td>
+                <td>{% for z in Student_courses %}{% if z.student_number == request.user.username %}{% if "星期四" in z.week %}{% if "15:10" in z.time %}{{ z.name }}{% elif "16:00" in z.time %}{{ z.name }}{% elif "14:10 - 17:00" in z.time%}{{ z.name }}{% endif %}{% endif %}{% endif %}{% endfor %}</td>
+                <td>{% for z in Student_courses %}{% if z.student_number == request.user.username %}{% if "星期五" in z.week %}{% if "15:10" in z.time %}{{ z.name }}{% elif "16:00" in z.time %}{{ z.name }}{% elif "14:10 - 17:00" in z.time%}{{ z.name }}{% endif %}{% endif %}{% endif %}{% endfor %}</td>
+                <td></td>
+                <td></td>
+            </tr>
+            <tr>
+                <td>9</td>
+                <td>16:10 - 17:00</td>
+                <td>{% for z in Student_courses %}{% if z.student_number == request.user.username %}{% if "星期一" in z.week %}{% if "16:10" in z.time %}{{ z.name }}{% elif "17:00" in z.time %}{{ z.name }}{% elif "15:10 - 18:00" in z.time%}{{ z.name }}{% endif %}{% endif %}{% endif %}{% endfor %}</td>
+                <td>{% for z in Student_courses %}{% if z.student_number == request.user.username %}{% if "星期二" in z.week %}{% if "16:10" in z.time %}{{ z.name }}{% elif "17:00" in z.time %}{{ z.name }}{% elif "15:10 - 18:00" in z.time%}{{ z.name }}{% endif %}{% endif %}{% endif %}{% endfor %}</td>
+                <td>{% for z in Student_courses %}{% if z.student_number == request.user.username %}{% if "星期三" in z.week %}{% if "16:10" in z.time %}{{ z.name }}{% elif "17:00" in z.time %}{{ z.name }}{% elif "15:10 - 18:00" in z.time%}{{ z.name }}{% endif %}{% endif %}{% endif %}{% endfor %}</td>
+                <td>{% for z in Student_courses %}{% if z.student_number == request.user.username %}{% if "星期四" in z.week %}{% if "16:10" in z.time %}{{ z.name }}{% elif "17:00" in z.time %}{{ z.name }}{% elif "15:10 - 18:00" in z.time%}{{ z.name }}{% endif %}{% endif %}{% endif %}{% endfor %}</td>
+                <td>{% for z in Student_courses %}{% if z.student_number == request.user.username %}{% if "星期五" in z.week %}{% if "16:10" in z.time %}{{ z.name }}{% elif "17:00" in z.time %}{{ z.name }}{% elif "15:10 - 18:00" in z.time%}{{ z.name }}{% endif %}{% endif %}{% endif %}{% endfor %}</td>
+                <td></td>
+                <td></td>
+            </tr>
+            <tr>
+                <td>10</td>
+                <td>17:10 - 18:00</td>
+                <td>{% for z in Student_courses %}{% if z.student_number == request.user.username %}{% if "星期一" in z.week %}{% if "18:00" in z.time %}{{ z.name }}{% endif %}{% endif %}{% endif %}{% endfor %}</td>
+                <td>{% for z in Student_courses %}{% if z.student_number == request.user.username %}{% if "星期二" in z.week %}{% if "18:00" in z.time %}{{ z.name }}{% endif %}{% endif %}{% endif %}{% endfor %}</td>
+                <td>{% for z in Student_courses %}{% if z.student_number == request.user.username %}{% if "星期三" in z.week %}{% if "18:00" in z.time %}{{ z.name }}{% endif %}{% endif %}{% endif %}{% endfor %}</td>
+                <td>{% for z in Student_courses %}{% if z.student_number == request.user.username %}{% if "星期四" in z.week %}{% if "18:00" in z.time %}{{ z.name }}{% endif %}{% endif %}{% endif %}{% endfor %}</td>
+                <td>{% for z in Student_courses %}{% if z.student_number == request.user.username %}{% if "星期五" in z.week %}{% if "18:00" in z.time %}{{ z.name }}{% endif %}{% endif %}{% endif %}{% endfor %}</td>
+                <td></td>
+                <td></td>
+            </tr>
+            <tr>
+                <td>11</td>
+                <td>18:30 - 19:20</td>
+                <td>{% for z in Student_courses %}{% if z.student_number == request.user.username %}{% if "星期一" in z.week %}{% if "18:30" in z.time %}{{ z.name }}{% endif %}{% endif %}{% endif %}{% endfor %}</td>
+                <td>{% for z in Student_courses %}{% if z.student_number == request.user.username %}{% if "星期二" in z.week %}{% if "18:30" in z.time %}{{ z.name }}{% endif %}{% endif %}{% endif %}{% endfor %}</td>
+                <td>{% for z in Student_courses %}{% if z.student_number == request.user.username %}{% if "星期三" in z.week %}{% if "18:30" in z.time %}{{ z.name }}{% endif %}{% endif %}{% endif %}{% endfor %}</td>
+                <td>{% for z in Student_courses %}{% if z.student_number == request.user.username %}{% if "星期四" in z.week %}{% if "18:30" in z.time %}{{ z.name }}{% endif %}{% endif %}{% endif %}{% endfor %}</td>
+                <td>{% for z in Student_courses %}{% if z.student_number == request.user.username %}{% if "星期五" in z.week %}{% if "18:30" in z.time %}{{ z.name }}{% endif %}{% endif %}{% endif %}{% endfor %}</td>
+                <td></td>
+                <td></td>
+            </tr>
+            <tr>
+                <td>12</td>
+                <td>19:25 - 20:15</td>
+                <td>{% for z in Student_courses %}{% if z.student_number == request.user.username %}{% if "星期一" in z.week %}{% if "19:25" in z.time %}{{ z.name }}{% elif "20:15" in z.time %}{{ z.name }}{% elif "18:30 - 21:15" in z.time%}{{ z.name }}{% endif %}{% endif %}{% endif %}{% endfor %}</td>
+                <td>{% for z in Student_courses %}{% if z.student_number == request.user.username %}{% if "星期二" in z.week %}{% if "19:25" in z.time %}{{ z.name }}{% elif "20:15" in z.time %}{{ z.name }}{% elif "18:30 - 21:15" in z.time%}{{ z.name }}{% endif %}{% endif %}{% endif %}{% endfor %}</td>
+                <td>{% for z in Student_courses %}{% if z.student_number == request.user.username %}{% if "星期三" in z.week %}{% if "19:25" in z.time %}{{ z.name }}{% elif "20:15" in z.time %}{{ z.name }}{% elif "18:30 - 21:15" in z.time%}{{ z.name }}{% endif %}{% endif %}{% endif %}{% endfor %}</td>
+                <td>{% for z in Student_courses %}{% if z.student_number == request.user.username %}{% if "星期四" in z.week %}{% if "19:25" in z.time %}{{ z.name }}{% elif "20:15" in z.time %}{{ z.name }}{% elif "18:30 - 21:15" in z.time%}{{ z.name }}{% endif %}{% endif %}{% endif %}{% endfor %}</td>
+                <td>{% for z in Student_courses %}{% if z.student_number == request.user.username %}{% if "星期五" in z.week %}{% if "19:25" in z.time %}{{ z.name }}{% elif "20:15" in z.time %}{{ z.name }}{% elif "18:30 - 21:15" in z.time%}{{ z.name }}{% endif %}{% endif %}{% endif %}{% endfor %}</td>
+                <td></td>
+                <td></td>
+            </tr>
+            <tr>
+                <td>13</td>
+                <td>20:25 - 21:15</td>
+                <td>{% for z in Student_courses %}{% if z.student_number == request.user.username %}{% if "星期一" in z.week %}{% if "20:25" in z.time %}{{ z.name }}{% elif "21:15" in z.time %}{{ z.name }}{% elif "19:25 - 21:15" in z.time%}{{ z.name }}{% endif %}{% endif %}{% endif %}{% endfor %}</td>
+                <td>{% for z in Student_courses %}{% if z.student_number == request.user.username %}{% if "星期二" in z.week %}{% if "20:25" in z.time %}{{ z.name }}{% elif "21:15" in z.time %}{{ z.name }}{% elif "19:25 - 21:15" in z.time%}{{ z.name }}{% endif %}{% endif %}{% endif %}{% endfor %}</td>
+                <td>{% for z in Student_courses %}{% if z.student_number == request.user.username %}{% if "星期三" in z.week %}{% if "20:25" in z.time %}{{ z.name }}{% elif "21:15" in z.time %}{{ z.name }}{% elif "19:25 - 21:15" in z.time%}{{ z.name }}{% endif %}{% endif %}{% endif %}{% endfor %}</td>
+                <td>{% for z in Student_courses %}{% if z.student_number == request.user.username %}{% if "星期四" in z.week %}{% if "20:25" in z.time %}{{ z.name }}{% elif "21:15" in z.time %}{{ z.name }}{% elif "19:25 - 21:15" in z.time%}{{ z.name }}{% endif %}{% endif %}{% endif %}{% endfor %}</td>
+                <td>{% for z in Student_courses %}{% if z.student_number == request.user.username %}{% if "星期五" in z.week %}{% if "20:25" in z.time %}{{ z.name }}{% elif "21:15" in z.time %}{{ z.name }}{% elif "19:25 - 21:15" in z.time%}{{ z.name }}{% endif %}{% endif %}{% endif %}{% endfor %}</td>
+                <td></td>
+                <td></td>
+            </tr>
+            <tr>
+                <td>14</td>
+                <td>21:20 - 22:10</td>
+                <td>{% for z in Student_courses %}{% if z.student_number == request.user.username %}{% if "星期一" in z.week %}{% if "22:10" in z.time %}{{ z.name }}{% endif %}{% endif %}{% endif %}{% endfor %}</td>
+                <td>{% for z in Student_courses %}{% if z.student_number == request.user.username %}{% if "星期二" in z.week %}{% if "22:10" in z.time %}{{ z.name }}{% endif %}{% endif %}{% endif %}{% endfor %}</td>
+                <td>{% for z in Student_courses %}{% if z.student_number == request.user.username %}{% if "星期三" in z.week %}{% if "22:10" in z.time %}{{ z.name }}{% endif %}{% endif %}{% endif %}{% endfor %}</td>
+                <td>{% for z in Student_courses %}{% if z.student_number == request.user.username %}{% if "星期四" in z.week %}{% if "22:10" in z.time %}{{ z.name }}{% endif %}{% endif %}{% endif %}{% endfor %}</td>
+                <td>{% for z in Student_courses %}{% if z.student_number == request.user.username %}{% if "星期五" in z.week %}{% if "22:10" in z.time %}{{ z.name }}{% endif %}{% endif %}{% endif %}{% endfor %}</td>
+                <td></td>
+                <td></td>
+            </tr>
+        </table>
+    </div>
+
+    <footer>
+        <p>茶裏王 - 回甘就像現泡</p>
+    </footer>
+</body>
+</html>
+
+    
+
+
 

@@ -1,0 +1,144 @@
+*{
+    font-family: sans-serif;
+    font-weight: bold;
+    margin: 0;
+}
+
+.user-info .head{
+    font-size: 80px;
+    color: white;
+}
+
+.user-info p{
+    padding-left: 40px;
+    padding-top: 53px;
+}
+
+.user-info a{
+    color: white;
+    text-decoration: none;
+    padding-left: 60px;
+    padding-top: 51px;
+}
+
+.user-info {
+    display: flex;
+    align-items: center;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    color: white;
+    background-color: rgb(61, 146, 61);
+    display: flex;
+    align-items: center;
+    margin-bottom: 20px;
+    padding-top: 10px;
+    -webkit-text-stroke: 0.3px #aeaaaa;
+    font-size: 21px;
+}
+
+.search{
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    margin: 12px;
+}
+
+.search .search1 label{
+    margin: 30px;
+}
+
+.search .search2 label{
+    margin: 30px;
+}
+
+.search .search1 button{
+    margin-left: 25px;
+}
+
+.search .search2 button{
+    margin-left: 25px;
+    margin-top: 15px;
+}
+
+.body-left{
+    float:left;
+    margin-left: 8px;
+}
+
+.body-left p{
+    font-size: 40px;
+    margin: 12px;
+}
+
+.body-left .body-table{
+    overflow-y: auto;
+    max-height: 300px;
+    width: 700px;
+    margin-top: 20px;
+}
+
+.body-left .body-table table thead tr th{
+    padding: 7px;
+}
+.body-left .body-table table tbody tr td{
+    padding: 7px;
+}
+
+.body-right{
+    float:left;
+}
+
+.body-right p{
+    font-size: 40px;
+    margin: 12px;
+}
+
+.body-right .body-table{
+    overflow-y: auto;
+    max-height: 300px;
+    width: 700px;
+    margin-top: 92px;
+}
+
+.body-right .body-table table thead tr th{
+    padding: 7px;
+}
+
+.body-right .body-table table tbody tr td{
+    padding: 7px;
+}
+
+.bottom{
+    width: 1300px;
+    float: left;
+    margin-left: 120px;
+    margin-top: 50px;
+}
+
+
+.bottom p{
+    font-size: 40px;
+    margin: 12px;
+}
+
+.bottom td{
+    padding-left: 30px;
+    padding-right: 30px;
+    padding-top: 10px;
+    padding-bottom: 10px;
+}
+
+footer{
+    float: left;
+    background-color: rgb(61, 146, 61);
+    color: white;
+    width: 100%;
+    padding: 12px;
+    margin-top: 20px;
+    font-size: 25px;
+}
+
+footer p{
+    padding-left: 30px;
+}

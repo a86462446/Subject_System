@@ -1,19 +1,41 @@
+{% load static %}
+
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>茶裏王選課系統</title>
+    <link type= "text/css" rel= "stylesheet" href= "{% static '../static/css/register.css' %}?t={{ timestamp }}">
+    <link rel="shortcut icon" href="{% static '../static/images/logo.ico' %}?v=1" type="image/x-icon">
 </head>
 <body>
-    <h1>註冊</h1>
+    <div class= "register">
+        <header>
+            <p>用戶註冊</p>
+        </header>
 
-    <!-- 註冊功能 -->
-    <form action="" method="POST">
-        {% csrf_token %}
+        <!-- 註冊功能 -->
+        <form action="" method="POST">
+            {% csrf_token %}
 
-        {{ registerform }}
+            {{ registerform.username.label_tag }}
+            {{ registerform.username }}
+            <br>
+            {{ registerform.password1.label_tag }}
+            {{ registerform.password1 }}
+            <br>
+            {{ registerform.password2.label_tag }}
+            {{ registerform.password2 }}
+            <br>
+            {{ registerform.name.label_tag }}
+            {{ registerform.name }}
+            <br>
+            {{ registerform.classs.label_tag }}
+            {{ registerform.classs }}
+            <br>
 
-        <button type="submit">註冊</button>
-    </form>
+            <button type="submit">註冊</button>
+        </form>
+    </div>
 </body>
 </html>

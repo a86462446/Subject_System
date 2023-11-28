@@ -1,0 +1,46 @@
+*{
+    background-color: rgb(61, 146, 61);
+}
+
+header{
+    color: white;
+    width: 100%;
+}
+
+header p{
+    font-size: 80px;
+    display: flex;
+    text-align: center;
+    justify-content: center;
+    padding-top: 200px;
+}
+
+form{
+    background-color: white;
+    border-radius: 25px;
+    margin-left: 200px;
+    margin-right: 200px;
+    padding-left: 380px;
+}
+
+label{
+    background-color: white;
+    font-family: sans-serif;
+    font-weight:bold;
+}
+
+input{
+    font-weight: bold;
+    border-radius: 25px;
+    margin: 10px;
+    width: 200px;
+    background-color: white;
+}
+
+form p{
+    font-size: 15px;
+    background-color: white;
+    float: right;
+    margin-right: 70px;
+    margin-bottom: 20px;
+}

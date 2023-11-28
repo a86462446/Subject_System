@@ -1,19 +1,31 @@
+{% load static %}
+
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>茶裏王選課系統</title>
+    <link type= "text/css" rel= "stylesheet" href= "{% static '../static/css/login.css' %}?t={{ timestamp }}">
+    <link rel="shortcut icon" href="{% static '../static/images/logo.ico' %}?v=1" type="image/x-icon">
 </head>
 <body>
+
+    <header>
+        <p>茶裏王選課系統</p>
+    </header>
 
     <!-- 登入功能 -->
     <form action="" method="POST">
         {% csrf_token %}
-        {{ form }}
+        {{ form.username.label_tag }}
+        {{ form.username }}
+        <br>
+        {{ form.password.label_tag }}
+        {{ form.password }}
+        <br>
     
-        <input class="btn btn-primary" type="submit" value="登入" />
+        <input class="btn" type="submit" value="登入" />
+        <p>{{ error_message }}</p>
     </form>
-
-    <p>{{ wrong_account }}{{ wrong_password }}</p>
 </body>
 </html>

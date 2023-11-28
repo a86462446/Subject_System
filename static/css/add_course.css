@@ -1,0 +1,19 @@
+.message{
+    background-color: rgb(61, 146, 61);
+    border-radius: 25px;
+    margin: 300px;
+    text-align: center;
+    font-family: sans-serif;
+    font-weight: bold;
+}
+
+.message p{
+    color: white;
+    font-size: 25px;
+    padding-top: 20px;
+}
+
+.message button{
+    margin-bottom: 20px;
+    font-size: 15px;
+}

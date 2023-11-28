@@ -1,0 +1,37 @@
+*{
+    background-color: rgb(61, 146, 61);
+    font-family: sans-serif;
+    font-weight: bold;
+}
+
+.register{
+    background-color: white;
+    border-radius: 25px;
+    margin: 300px;
+    text-align: center;
+    padding: 10px;
+}
+
+.register p{
+    background-color: white;
+    font-size: 25px;
+}
+
+.register form{
+    background-color: white;
+}
+
+.register form label{
+    background-color: white;
+    margin: 20px;
+}
+
+.register form input{
+    background-color: white;
+    margin: 10px;
+}
+
+.register form button{
+    background-color: white;
+    margin: 10px;
+}

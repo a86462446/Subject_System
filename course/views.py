@@ -4,9 +4,10 @@ from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from .models import course, Student_course, Student
 from itertools import chain
+from django.contrib.auth.hashers import check_password
 
 # 學生選課主頁
-@login_required(login_url="Login")
+@login_required(login_url="login")
 def index(request):
     name_code_form= SearchForm()  # 搜尋課程名稱及課程代碼
     time_form= SearchForm2()    # 搜尋課程時間
@@ -83,13 +84,16 @@ def log_in(request):
         if user is not None:
             login(request, user)
             return redirect('/')  #重新導向到首頁
-        
-    # 將資訊存進context回傳至login.html
-    context = {
-        'form': form
-    }
+        else:
+            try:
+                if Student.objects.filter(student_number= username):
+                    return render(request, 'login.html', {'error_message': '密碼錯誤，請再試一次。', 'form': form})
+                else:
+                    return render(request, 'login.html', {'error_message': '帳號不存在，請檢查輸入的帳號。', 'form': form})
+            except:
+                return render(request, 'login.html', {'error_message': '登入時發生錯誤。', 'form': form})
 
-    return render(request, 'login.html', context)
+    return render(request, 'login.html', {'form': form})
 
 # 註冊
 def register(request):
@@ -141,11 +145,11 @@ def add_course(request, id):
     # 判斷此學生之學分是否已滿
     for i in Student.objects.filter(student_number= request.user.get_username()):
         if i.student_credit+ add_credit> 25:
-            return render(request, 'add_course.html', {'max_context': '已超過25學分，加選失敗！'})
+            return render(request, 'add_course.html', {'context': '已超過25學分，加選失敗！'})
 
     # 相同課程處理
     if Student_course.objects.filter(student_number= request.user.get_username(), code= add[id- 1].code):
-        return render(request, 'add_course.html', {'same_context': '已有此課程，加選失敗！'})
+        return render(request, 'add_course.html', {'context': '已有此課程，加選失敗！'})
 
     # 衝堂處理
     if Student_course.objects.filter(student_number= request.user.get_username(), week= add_week):
@@ -159,7 +163,7 @@ def add_course(request, id):
             for i in range(add_end- add_start+ 1):
                 for j in range(st_end- st_start+ 1):
                     if x+ i== y+ j:
-                        return render(request, 'add_course.html', {'conflict_context': '課堂衝突，加選失敗！'})
+                        return render(request, 'add_course.html', {'context': '課堂衝突，加選失敗！'})
     
     # 課程存進Student_course資料庫
     student= Student_course(student_number= request.user.username, code= add[id- 1].code, name= add[id- 1].name, classs= add[id- 1].classs, required_elective= add[id- 1].required_elective, credit= add[id- 1].credit, time= add[id- 1].time, start_session= add[id- 1].start_session, end_session= add[id- 1].end_session, week= add[id- 1].week)
@@ -170,7 +174,7 @@ def add_course(request, id):
         i.student_credit= i.student_credit+ add_credit
         i.save()
     
-    return render(request, 'add_course.html', {'success_context': '加選成功！'})
+    return render(request, 'add_course.html', {'context': '加選成功！'})
 
 # 退選
 def delete_course(request, code, id):

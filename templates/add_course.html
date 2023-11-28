@@ -1,22 +1,20 @@
+{% load static %}
+
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <link type= "text/css" rel= "stylesheet" href= "{% static '../static/css/add_course.css' %}?t={{ timestamp }}">
+    <link rel="shortcut icon" href="../static/images/logo.ico" type="image/x-icon">
+    <title>茶裏王選課系統</title>
 </head>
 <body>
 
-    <!-- 訊息 -->
-    {% if success_context %}
-        <p>{{ success_context }}</p>
-    {% elif same_context %}
-        <p>{{ same_context }}</p>
-    {% elif conflict_context %}
-        <p>{{ conflict_context }}</p>
-    {% elif max_context %}
-        <p>{{ max_context }}</p>
-    {% endif %}
+    <div class= "message">
+        <!-- 訊息 -->
+        <p>{{ context }}</p>
 
-    <button type="submit" onclick="window.location.href= '/'">返回上一頁</button>
+        <button type="submit" onclick="window.location.href= '/'">返回上一頁</button>
+    </div>
 </body>
 </html>
