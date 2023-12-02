@@ -1,5 +1,6 @@
 from django.shortcuts import render, redirect
 from .forms import LoginForm, RegisterForm, SearchForm, SearchForm2
+from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from .models import course, Student_course, Student
@@ -103,8 +104,8 @@ def register(request):
 
     if request.method == "POST":
 
-        form = RegisterForm(request.POST)
-
+        registerform = RegisterForm(request.POST)
+        
         # 存取表單內容
         student_number= request.POST.get("username")
         student_name= request.POST.get("name")
@@ -116,9 +117,10 @@ def register(request):
         # 重要: 儲存
         student.save()
 
-        if form.is_valid():
-            form.save()
+        if registerform.is_valid():
+            registerform.save()
             redirect('/login')  #重新導向到登入畫面
+
             
     # 將資訊存進context回傳至register.html
     context = {
@@ -189,6 +191,6 @@ def delete_course(request, code, id):
             j.save()
 
     # 將課程從Student_course刪掉
-    delete.filter(code= code).delete()
+    delete.filter(student_number= request.user.username, code= code).delete()
 
     return redirect('/')
